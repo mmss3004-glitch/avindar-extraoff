@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إدخال الإكسترا أوف</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗓️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F2F4F2; --ink:#14201C; --muted:#5E6E67; --line:#DBE2DD;
+    --green:#2F6B4F; --green-soft:#E6EFE9; --amber:#8A6314; --amber-soft:#F6EEDC;
+    --red:#8A2A20; --red-soft:#FBEAE8; --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  [hidden]{display:none !important;}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Tajawal',system-ui,sans-serif; font-size:16px; line-height:1.6; padding-bottom:104px;}
+  .wrap{max-width:960px; margin:0 auto; padding:20px 16px 0;}
+  header{display:flex; flex-wrap:wrap; gap:12px; align-items:baseline; justify-content:space-between;
+    padding-bottom:14px; border-bottom:1px solid var(--line);}
+  h1{font-size:22px; font-weight:700; margin:0;}
+  .who{font-size:14px; color:var(--muted);}
+
+  nav.tabs{display:flex; gap:4px; margin-top:14px; border-bottom:1px solid var(--line);}
+  nav.tabs button{background:none; color:var(--muted); border:none; border-bottom:2px solid transparent;
+    border-radius:0; padding:10px 16px; font-weight:500; margin-bottom:-1px;}
+  nav.tabs button.active{color:var(--ink); border-bottom-color:var(--green);}
+  nav.tabs button:hover{color:var(--ink);}
+
+  .week{margin:18px 0 6px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;}
+  .week b{font-weight:700;} .week span{color:var(--muted); font-size:14px;}
+  .status{margin:12px 0 20px; padding:12px 14px; border-radius:6px; font-size:15px; border:1px solid transparent;}
+  .status.open{background:var(--green-soft); border-color:#C6DCCE; color:#1F4C38;}
+  .status.closed{background:var(--amber-soft); border-color:#E8D8B4; color:var(--amber);}
+
+  .rows{background:var(--white); border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .row{display:grid; grid-template-columns:1fr 116px 1fr; gap:14px; align-items:center;
+    padding:14px 16px; border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:none;}
+  .row.head{background:#FAFBFA; font-size:13px; color:var(--muted); padding:10px 16px;}
+  .name{font-weight:500;} .meta{font-size:13px; color:var(--muted);}
+
+  .arow{display:grid; grid-template-columns:1fr auto auto; gap:14px; align-items:center;
+    padding:12px 16px; border-bottom:1px solid var(--line);}
+  .arow:last-child{border-bottom:none;}
+  .arow.off .name{color:var(--muted);}
+
+  .badge{font-size:12px; padding:2px 10px; border-radius:999px; white-space:nowrap;}
+  .badge.on{background:var(--green-soft); color:#1F4C38;}
+  .badge.offb{background:#EEF0EE; color:var(--muted);}
+  .badge.admin{background:var(--amber-soft); color:var(--amber);}
+
+  input[type=number], input[type=text], input[type=email], input[type=password], select{
+    width:100%; font-family:inherit; font-size:16px; color:var(--ink);
+    padding:9px 11px; border:1px solid var(--line); border-radius:6px; background:var(--white);}
+  input[type=number]{text-align:center; font-weight:700;}
+  input:focus, select:focus{outline:2px solid var(--green); outline-offset:1px; border-color:var(--green);}
+  input:disabled, input[readonly]{background:#F4F6F4; color:var(--muted);}
+  input.changed{border-color:var(--green); background:var(--green-soft);}
+
+  button{font-family:inherit; font-size:15px; font-weight:700; color:var(--white);
+    background:var(--green); border:none; border-radius:6px; padding:10px 20px; cursor:pointer;}
+  button:disabled{background:#B7C2BB; cursor:not-allowed;}
+  button:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  button.ghost{background:none; color:var(--green); border:1px solid var(--line); padding:7px 14px; font-weight:500;}
+  button.ghost:hover{border-color:var(--green);}
+  button.plain{background:none; color:var(--muted); font-weight:500;}
+
+  .toolbar{display:grid; grid-template-columns:2fr 1fr 1fr 1fr auto; gap:10px; margin:18px 0 10px;}
+  .count{font-size:14px; color:var(--muted); margin-bottom:10px;}
+
+  .bar{position:fixed; inset-inline:0; bottom:0; background:var(--white); border-top:1px solid var(--line); padding:14px 16px;}
+  .bar .inner{max-width:960px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:14px;}
+  .total{font-size:15px;} .total b{font-size:20px;}
+
+  .msg{padding:12px 16px; border-radius:6px; font-size:15px; margin:14px 0;}
+  .msg.err{background:var(--red-soft); color:var(--red); border:1px solid #EFC9C4;}
+  .msg.ok{background:var(--green-soft); color:#1F4C38; border:1px solid #C6DCCE;}
+  .empty{padding:40px 16px; text-align:center; color:var(--muted);}
+  .skeleton{height:56px; background:linear-gradient(90deg,#EEF1EF,#F7F9F7,#EEF1EF); border-radius:6px; margin-bottom:8px; animation:pulse 1.4s infinite;}
+  @keyframes pulse{50%{opacity:.55;}}
+  @media (prefers-reduced-motion:reduce){.skeleton{animation:none;}}
+
+  dialog{border:none; border-radius:10px; padding:0; width:min(520px, 94vw); color:var(--ink);}
+  dialog::backdrop{background:rgba(20,32,28,.45);}
+  .dlg-head{padding:16px 20px; border-bottom:1px solid var(--line); font-weight:700; font-size:18px;}
+  .dlg-body{padding:16px 20px; display:grid; gap:14px; max-height:70vh; overflow:auto;}
+  .dlg-foot{padding:14px 20px; border-top:1px solid var(--line); display:flex; gap:10px; justify-content:flex-start;}
+  label.f{display:grid; gap:6px; font-size:14px; color:var(--muted);}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .checks{display:flex; flex-wrap:wrap; gap:8px;}
+  .checks label{display:flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:6px;
+    padding:6px 10px; font-size:14px; color:var(--ink); cursor:pointer;}
+  .checks input{width:auto;}
+  .hint{font-size:13px; color:var(--muted);}
+  .login-card{max-width:380px; margin:48px auto; background:var(--white); border:1px solid var(--line);
+    border-radius:10px; padding:24px; display:grid; gap:14px;}
+  .login-card h2{margin:0; font-size:20px;}
+  .login-card button{width:100%; padding:12px;}
+  .head-end{display:flex; gap:10px; align-items:baseline;}
+
+  @media (max-width:720px){
+    .toolbar{grid-template-columns:1fr 1fr;}
+    .toolbar .search{grid-column:1 / -1;}
+  }
+  @media (max-width:640px){
+    .row{grid-template-columns:1fr 92px; gap:10px 12px;}
+    .row .note{grid-column:1 / -1;}
+    .row.head{display:none;}
+    .arow{grid-template-columns:1fr auto;}
+    .arow .badge{grid-row:2; justify-self:start;}
+    .grid2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1 id="title">إدخال الإكسترا أوف</h1>
+    <div class="head-end">
+      <div class="who" id="who"></div>
+      <button class="plain" id="logout" hidden>خروج</button>
+    </div>
+  </header>
+
+  <section id="login" hidden>
+    <div class="login-card">
+      <h2>تسجيل الدخول</h2>
+      <div id="loginMsg"></div>
+      <label class="f">الإيميل<input type="email" id="lEmail" dir="ltr" autocomplete="username" placeholder="name@gmail.com"></label>
+      <label class="f">رمز الدخول<input type="password" id="lPin" inputmode="numeric" maxlength="6" dir="ltr" autocomplete="current-password"></label>
+      <button id="lBtn">دخول</button>
+      <div class="hint">الرمز تستلمه من قسم تقنية المعلومات. لا تشاركه مع أحد — كل إدخال يُسجّل باسمك.</div>
+    </div>
+  </section>
+
+  <nav class="tabs" id="tabs" hidden>
+    <button data-tab="entry" class="active">الإدخال</button>
+    <button data-tab="employees">الموظفين</button>
+    <button data-tab="managers">المدراء</button>
+  </nav>
+
+  <section id="entry">
+    <div class="skeleton" style="margin-top:24px"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </section>
+  <section id="employees" hidden></section>
+  <section id="managers" hidden></section>
+</div>
+
+<div class="bar" id="bar" hidden>
+  <div class="inner">
+    <div class="total">إجمالي الأيام: <b id="total">0</b></div>
+    <button id="save" disabled>حفظ الإدخال</button>
+  </div>
+</div>
+
+<dialog id="empDlg">
+  <div class="dlg-head" id="empDlgTitle">إضافة موظف</div>
+  <div class="dlg-body">
+    <div id="empErr"></div>
+    <div class="grid2">
+      <label class="f">الرقم الوظيفي<input type="text" id="fEmpId" inputmode="numeric" maxlength="10"></label>
+      <label class="f">الحالة<select id="fStatus"><option value="Active">نشط</option><option value="Inactive">موقوف</option></select></label>
+    </div>
+    <label class="f">الاسم الكامل<input type="text" id="fName" maxlength="100"></label>
+    <div class="grid2">
+      <label class="f">القسم<select id="fDept"></select></label>
+      <label class="f">الفرع<select id="fBranch"></select></label>
+    </div>
+    <label class="f">المسمى الوظيفي<input type="text" id="fPos" maxlength="60"></label>
+    <div class="hint" id="empHint"></div>
+  </div>
+  <div class="dlg-foot">
+    <button id="empSave">حفظ</button>
+    <button class="plain" data-close="empDlg">إلغاء</button>
+  </div>
+</dialog>
+
+<dialog id="mgrDlg">
+  <div class="dlg-head" id="mgrDlgTitle">إضافة مدير</div>
+  <div class="dlg-body">
+    <div id="mgrErr"></div>
+    <label class="f">إيميل قوقل<input type="email" id="mEmail" dir="ltr" placeholder="name@gmail.com"></label>
+    <label class="f">الاسم<input type="text" id="mName" maxlength="80"></label>
+    <div class="grid2">
+      <label class="f">رمز الدخول<input type="text" id="mPin" inputmode="numeric" maxlength="6" dir="ltr"></label>
+      <div style="display:flex; align-items:flex-end"><button class="ghost" id="mPinGen" type="button">توليد رمز جديد</button></div>
+    </div>
+    <div class="grid2">
+      <label class="f">الدور<select id="mRole"><option value="manager">مدير قسم</option><option value="admin">أدمن</option></select></label>
+      <label class="f">الحالة<select id="mStatus"><option value="Active">نشط</option><option value="Inactive">موقوف</option></select></label>
+    </div>
+    <div id="mScope">
+      <div class="f" style="margin-bottom:6px; font-size:14px; color:var(--muted)">الأقسام</div>
+      <div class="checks" id="mDepts"></div>
+      <div class="f" style="margin:14px 0 6px; font-size:14px; color:var(--muted)">الفروع</div>
+      <div class="checks" id="mBranches"></div>
+      <div class="hint" style="margin-top:8px">إذا ما اخترت أي فرع، يشوف المدير قسمه في كل الفروع.</div>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button id="mgrSave">حفظ</button>
+    <button class="plain" data-close="mgrDlg">إلغاء</button>
+  </div>
+</dialog>
+
+<script>
+/* ===== الاتصال بالخادم (Apps Script) =====
+ * لو تغيّر رابط النشر، عدّل السطر التالي فقط.
+ */
+var API_URL = 'https://script.google.com/macros/s/AKfycbwnu_S-KqrThYXLL2PydWC4mSU9p1O5aKInDgPNZy4Ykk446thG29nulA15o7blHDnnkQ/exec';
+
+function apiCall(action, args){
+  return fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: action, args: args || [] }),
+    redirect: 'follow'
+  }).then(function(r){
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+
+/* نفس أسلوب google.script.run عشان بقية الكود ما يتغير */
+var google = { script: {} };
+Object.defineProperty(google.script, 'run', { get: function(){
+  var onOk = function(){}, onFail = function(){};
+  var runner = new Proxy({}, { get: function(_, prop){
+    if (prop === 'withSuccessHandler') return function(f){ onOk = f; return runner; };
+    if (prop === 'withFailureHandler') return function(f){ onFail = f; return runner; };
+    return function(){
+      var args = Array.prototype.slice.call(arguments);
+      apiCall(prop, args).then(onOk).catch(function(){
+        onFail({ message: 'تعذر الاتصال بالنظام. تأكد من الإنترنت وحاول مرة ثانية.' });
+      });
+    };
+  }});
+  return runner;
+}});
+</script>
+<script>
+var STATE = null, ADMIN = null, CURRENT_TAB = 'entry', ENTRY_STALE = false;
+var EDIT_EMP = null, EDIT_MGR = null;
+var SKELETON = '<div class="skeleton" style="margin-top:24px"></div><div class="skeleton"></div><div class="skeleton"></div>';
+var TOKEN = null;
+try { TOKEN = sessionStorage.getItem('xo_token'); } catch (e) {}
+function setToken(t){
+  TOKEN = t;
+  try { t ? sessionStorage.setItem('xo_token', t) : sessionStorage.removeItem('xo_token'); } catch (e) {}
+}
+
+function el(tag, cls, text){
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+function $(id){ return document.getElementById(id); }
+function flash(container, ok, text){
+  var old = container.querySelector(':scope > .msg'); if (old) old.remove();
+  var m = el('div', 'msg ' + (ok ? 'ok' : 'err'), text);
+  container.insertBefore(m, container.firstChild);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function fail(text){ var s = $('entry'); s.innerHTML = ''; s.appendChild(el('div','msg err', text)); }
+
+/* ============ الإدخال ============ */
+
+function boot(){
+  if (!TOKEN) return needLogin('');
+  $('login').hidden = true;
+  $('entry').innerHTML = SKELETON;
+  google.script.run.withSuccessHandler(renderEntry)
+    .withFailureHandler(function(e){ fail(e.message); }).getBootstrap(TOKEN);
+}
+
+function needLogin(msg){
+  setToken(null); ADMIN = null; STATE = null; ENTRY_STALE = false;
+  $('tabs').hidden = true; $('bar').hidden = true; $('logout').hidden = true; $('who').textContent = '';
+  ['entry','employees','managers'].forEach(function(t){ $(t).hidden = true; });
+  $('employees').innerHTML = ''; $('managers').innerHTML = '';
+  $('loginMsg').innerHTML = '';
+  if (msg) $('loginMsg').appendChild(el('div','msg err', msg));
+  $('login').hidden = false;
+  $('lEmail').focus();
+}
+
+function doLogin(){
+  var b = $('lBtn'); b.disabled = true; b.textContent = 'جاري الدخول…';
+  google.script.run.withSuccessHandler(function(res){
+      b.disabled = false; b.textContent = 'دخول';
+      if (!res.ok){ $('loginMsg').innerHTML = ''; $('loginMsg').appendChild(el('div','msg err', res.message)); return; }
+      setToken(res.token); $('lPin').value = '';
+      showTab('entry'); boot();
+    }).withFailureHandler(function(e){
+      b.disabled = false; b.textContent = 'دخول';
+      $('loginMsg').innerHTML = ''; $('loginMsg').appendChild(el('div','msg err', e.message));
+    }).login($('lEmail').value, $('lPin').value);
+}
+$('lBtn').addEventListener('click', doLogin);
+$('lPin').addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
+$('lEmail').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('lPin').focus(); });
+$('logout').addEventListener('click', function(){
+  var t = TOKEN; google.script.run.logout(t); needLogin('');
+});
+
+function renderEntry(data){
+  if (!data.ok) return data.auth ? needLogin(data.message) : fail(data.message);
+  STATE = data; ENTRY_STALE = false;
+  $('logout').hidden = false;
+  $('title').textContent = data.title; document.title = data.title;
+  $('who').textContent = data.user.name + ' · ' + data.user.scopeLabel;
+  if (data.user.isAdmin) $('tabs').hidden = false;
+
+  var app = $('entry'); app.innerHTML = '';
+  var week = el('div','week');
+  week.appendChild(el('b','', 'أسبوع ' + data.week.label));
+  week.appendChild(el('span','', 'عدد الموظفين: ' + data.employees.length));
+  app.appendChild(week);
+
+  var st = el('div','status ' + (data.window.open ? 'open' : 'closed'));
+  st.textContent = data.window.open
+    ? (data.window.adminBypass ? data.window.reason : 'الإدخال مفتوح اليوم. عدّل الأيام ثم احفظ.')
+    : data.window.reason;
+  app.appendChild(st);
+
+  if (!data.employees.length){
+    app.appendChild(el('div','empty','ما فيه موظفين مسجّلين ضمن نطاقك. راجع تقنية المعلومات.'));
+    $('bar').hidden = true; return;
+  }
+
+  var box = el('div','rows');
+  var head = el('div','row head');
+  ['الموظف','عدد الأيام','ملاحظة'].forEach(function(t){ head.appendChild(el('div','',t)); });
+  box.appendChild(head);
+
+  data.employees.forEach(function(emp){
+    var saved = data.saved[emp.empId] || { value: 0, note: '' };
+    var row = el('div','row');
+    var who = el('div');
+    who.appendChild(el('div','name', emp.name));
+    who.appendChild(el('div','meta', emp.empId + ' · ' + emp.department + (emp.branch ? ' · ' + emp.branch : '')));
+    row.appendChild(who);
+
+    var num = document.createElement('input');
+    num.type = 'number'; num.inputMode = 'decimal';
+    num.min = 0; num.max = data.limits.max; num.step = data.limits.step;
+    num.value = saved.value; num.dataset.empId = emp.empId; num.dataset.original = String(saved.value);
+    num.disabled = !data.window.open; num.addEventListener('input', onChange);
+    row.appendChild(num);
+
+    var note = document.createElement('input');
+    note.type = 'text'; note.className = 'note'; note.placeholder = 'سبب الاستحقاق (اختياري)';
+    note.value = saved.note; note.maxLength = 200; note.dataset.noteFor = emp.empId;
+    note.disabled = !data.window.open; note.addEventListener('input', onChange);
+    row.appendChild(note);
+    box.appendChild(row);
+  });
+  app.appendChild(box);
+
+  $('bar').hidden = CURRENT_TAB !== 'entry';
+  $('save').disabled = !data.window.open;
+  $('save').textContent = data.window.open ? 'حفظ الإدخال' : 'الإدخال مقفل';
+  recalc();
+}
+
+function onChange(e){
+  if (e.target.type === 'number') e.target.classList.toggle('changed', e.target.value !== e.target.dataset.original);
+  recalc();
+}
+function recalc(){
+  var t = 0;
+  document.querySelectorAll('#entry input[type=number]').forEach(function(i){ t += Number(i.value) || 0; });
+  $('total').textContent = t;
+}
+function entryDirty(){ return !!document.querySelector('#entry input.changed'); }
+
+$('save').addEventListener('click', function(){
+  var btn = this; btn.disabled = true; btn.textContent = 'جاري الحفظ…';
+  var notes = {};
+  document.querySelectorAll('#entry input[data-note-for]').forEach(function(n){ notes[n.dataset.noteFor] = n.value; });
+  var rows = [];
+  document.querySelectorAll('#entry input[type=number]').forEach(function(i){
+    rows.push({ empId: i.dataset.empId, value: Number(i.value) || 0, note: notes[i.dataset.empId] || '' });
+  });
+  google.script.run.withSuccessHandler(function(res){
+      if (res.auth) return needLogin(res.message);
+      flash($('entry'), res.ok, res.message);
+      if (res.ok) document.querySelectorAll('#entry input[type=number]').forEach(function(i){
+        i.dataset.original = i.value; i.classList.remove('changed'); });
+      btn.disabled = false; btn.textContent = 'حفظ الإدخال';
+    }).withFailureHandler(function(e){
+      flash($('entry'), false, e.message); btn.disabled = false; btn.textContent = 'حفظ الإدخال';
+    }).saveEntries(TOKEN, rows);
+});
+
+/* ============ التبويبات ============ */
+
+document.querySelectorAll('#tabs button').forEach(function(b){
+  b.addEventListener('click', function(){ showTab(b.dataset.tab); });
+});
+
+function showTab(tab){
+  CURRENT_TAB = tab;
+  document.querySelectorAll('#tabs button').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === tab); });
+  ['entry','employees','managers'].forEach(function(t){ $(t).hidden = t !== tab; });
+  $('bar').hidden = tab !== 'entry' || !STATE || !STATE.employees.length;
+  if (tab === 'entry' && ENTRY_STALE && !entryDirty()) boot();
+  if (tab !== 'entry' && !ADMIN) loadAdmin();
+}
+
+/* ============ الإدارة ============ */
+
+function loadAdmin(after){
+  ['employees','managers'].forEach(function(t){
+    if (!ADMIN) $(t).innerHTML = '<div class="skeleton" style="margin-top:24px"></div><div class="skeleton"></div>';
+  });
+  google.script.run.withSuccessHandler(function(d){
+      if (d.auth) return needLogin(d.message);
+      if (!d.ok){ ['employees','managers'].forEach(function(t){ $(t).innerHTML=''; $(t).appendChild(el('div','msg err', d.message)); }); return; }
+      ADMIN = d; fillSelects(); renderEmployees(); renderManagers();
+      if (after) after();
+    }).withFailureHandler(function(e){ flash($('employees'), false, e.message); })
+    .adminGetData(TOKEN);
+}
+
+function option(sel, value, label){ var o = document.createElement('option'); o.value = value; o.textContent = label || value; sel.appendChild(o); }
+
+function fillSelects(){
+  var d = $('fDept'), b = $('fBranch');
+  d.innerHTML = ''; b.innerHTML = '';
+  ADMIN.departments.forEach(function(x){ option(d, x); });
+  ADMIN.branches.forEach(function(x){ option(b, x); });
+}
+
+/* ---- الموظفين ---- */
+var EMP_FILTER = { q: '', dept: '', branch: '', status: 'Active' };
+
+function renderEmployees(){
+  var s = $('employees'); s.innerHTML = '';
+  var tb = el('div','toolbar');
+
+  var q = document.createElement('input'); q.type = 'text'; q.className = 'search';
+  q.placeholder = 'بحث بالاسم أو الرقم'; q.value = EMP_FILTER.q;
+  q.addEventListener('input', function(){ EMP_FILTER.q = q.value; drawEmpList(); });
+  tb.appendChild(q);
+
+  function filterSel(key, all, list){
+    var sel = document.createElement('select');
+    option(sel, '', all);
+    list.forEach(function(x){ option(sel, x[0], x[1]); });
+    sel.value = EMP_FILTER[key];
+    sel.addEventListener('change', function(){ EMP_FILTER[key] = sel.value; drawEmpList(); });
+    tb.appendChild(sel);
+  }
+  filterSel('dept', 'كل الأقسام', ADMIN.departments.map(function(x){ return [x, x]; }));
+  filterSel('branch', 'كل الفروع', ADMIN.branches.map(function(x){ return [x, x]; }));
+  filterSel('status', 'كل الحالات', [['Active','نشط'],['Inactive','موقوف']]);
+
+  var add = el('button','', '+ إضافة موظف');
+  add.addEventListener('click', function(){ openEmp(null); });
+  tb.appendChild(add);
+
+  s.appendChild(tb);
+  s.appendChild(el('div','count')).id = 'empCount';
+  var list = el('div','rows'); list.id = 'empList';
+  s.appendChild(list);
+  drawEmpList();
+}
+
+function drawEmpList(){
+  var q = EMP_FILTER.q.trim().toLowerCase();
+  var items = ADMIN.employees.filter(function(e){
+    if (EMP_FILTER.dept && e.department !== EMP_FILTER.dept) return false;
+    if (EMP_FILTER.branch && e.branch !== EMP_FILTER.branch) return false;
+    if (EMP_FILTER.status && e.status !== EMP_FILTER.status) return false;
+    if (q && e.name.toLowerCase().indexOf(q) === -1 && e.empId.indexOf(q) === -1) return false;
+    return true;
+  });
+  $('empCount').textContent = items.length + ' موظف';
+  var list = $('empList'); list.innerHTML = '';
+  if (!items.length){ list.appendChild(el('div','empty','ما فيه نتائج.')); return; }
+
+  items.slice(0, 400).forEach(function(e){
+    var r = el('div','arow' + (e.status === 'Inactive' ? ' off' : ''));
+    var who = el('div');
+    who.appendChild(el('div','name', e.name));
+    who.appendChild(el('div','meta', [e.empId, e.department, e.branch, e.position].filter(Boolean).join(' · ')));
+    r.appendChild(who);
+    r.appendChild(el('span','badge ' + (e.status === 'Active' ? 'on' : 'offb'), e.status === 'Active' ? 'نشط' : 'موقوف'));
+    var b = el('button','ghost','تعديل');
+    b.addEventListener('click', function(){ openEmp(e); });
+    r.appendChild(b);
+    list.appendChild(r);
+  });
+}
+
+function openEmp(e){
+  EDIT_EMP = e; $('empErr').innerHTML = ''; fillSelects();
+  $('empDlgTitle').textContent = e ? 'تعديل موظف' : 'إضافة موظف';
+  $('fEmpId').value = e ? e.empId : '';
+  $('fEmpId').readOnly = !!e;
+  $('fName').value = e ? e.name : '';
+  $('fDept').value = e ? e.department : (EMP_FILTER.dept || ADMIN.departments[0]);
+  $('fBranch').value = e ? e.branch : (EMP_FILTER.branch || ADMIN.branches[0]);
+  $('fPos').value = e ? e.position : '';
+  $('fStatus').value = e ? e.status : 'Active';
+  $('empHint').textContent = e
+    ? 'الرقم الوظيفي ما يتعدّل لأنه مربوط بسجل الإدخالات. لإيقاف موظف ترك العمل غيّر الحالة إلى موقوف — لا تحذفه.'
+    : '';
+  if (e && ADMIN.departments.indexOf(e.department) === -1) option($('fDept'), e.department, e.department + ' (غير معتمد)');
+  if (e && ADMIN.branches.indexOf(e.branch) === -1) option($('fBranch'), e.branch, e.branch + ' (غير معتمد)');
+  if (e) { $('fDept').value = e.department; $('fBranch').value = e.branch; }
+  $('empDlg').showModal();
+  (e ? $('fName') : $('fEmpId')).focus();
+}
+
+$('empSave').addEventListener('click', function(){
+  var btn = this; btn.disabled = true;
+  var payload = { empId: $('fEmpId').value, name: $('fName').value, department: $('fDept').value,
+                  branch: $('fBranch').value, position: $('fPos').value, status: $('fStatus').value };
+  google.script.run.withSuccessHandler(function(res){
+      btn.disabled = false;
+      if (res.auth){ $('empDlg').close(); return needLogin(res.message); }
+      if (!res.ok){ $('empErr').innerHTML = ''; $('empErr').appendChild(el('div','msg err', res.message)); return; }
+      $('empDlg').close(); ENTRY_STALE = true;
+      loadAdmin(function(){ flash($('employees'), true, res.message); });
+    }).withFailureHandler(function(e){ btn.disabled = false; $('empErr').innerHTML=''; $('empErr').appendChild(el('div','msg err', e.message)); })
+    .adminSaveEmployee(TOKEN, payload, EDIT_EMP ? 'edit' : 'add');
+});
+
+/* ---- المدراء ---- */
+
+function renderManagers(){
+  var s = $('managers'); s.innerHTML = '';
+  var tb = el('div','week');
+  tb.appendChild(el('b','', ADMIN.managers.length + ' حساب'));
+  var add = el('button','', '+ إضافة مدير');
+  add.style.marginInlineStart = 'auto';
+  add.addEventListener('click', function(){ openMgr(null); });
+  tb.appendChild(add);
+  s.appendChild(tb);
+
+  var list = el('div','rows'); list.style.marginTop = '12px';
+  ADMIN.managers.forEach(function(m){
+    var r = el('div','arow' + (m.status === 'Inactive' ? ' off' : ''));
+    var who = el('div');
+    who.appendChild(el('div','name', m.name));
+    var scope = m.role === 'admin' ? 'كل الأقسام والفروع' :
+      m.departments.join('، ') + ' · ' + (!m.branches.length || m.branches.indexOf('*') > -1 ? 'كل الفروع' : m.branches.join('، '));
+    var meta = el('div','meta'); meta.dir = 'auto'; meta.textContent = m.email + ' · ' + scope;
+    who.appendChild(meta);
+    r.appendChild(who);
+    var badge = m.status === 'Inactive' ? ['offb','موقوف'] : (m.role === 'admin' ? ['admin','أدمن'] : ['on','مدير قسم']);
+    r.appendChild(el('span','badge ' + badge[0], badge[1]));
+    var b = el('button','ghost','تعديل');
+    b.addEventListener('click', function(){ openMgr(m); });
+    r.appendChild(b);
+    list.appendChild(r);
+  });
+  s.appendChild(list);
+}
+
+function checks(container, values, selected){
+  container.innerHTML = '';
+  values.forEach(function(v){
+    var l = document.createElement('label');
+    var c = document.createElement('input'); c.type = 'checkbox'; c.value = v;
+    c.checked = selected.indexOf(v) > -1;
+    l.appendChild(c); l.appendChild(document.createTextNode(v));
+    container.appendChild(l);
+  });
+}
+function checked(container){
+  return Array.prototype.map.call(container.querySelectorAll('input:checked'), function(c){ return c.value; });
+}
+function genPin(){ return String(Math.floor(1000 + Math.random() * 9000)); }
+$('mPinGen').addEventListener('click', function(){ $('mPin').value = genPin(); });
+function toggleScope(){ $('mScope').hidden = $('mRole').value === 'admin'; }
+$('mRole').addEventListener('change', toggleScope);
+
+function openMgr(m){
+  EDIT_MGR = m; $('mgrErr').innerHTML = '';
+  $('mgrDlgTitle').textContent = m ? 'تعديل مدير' : 'إضافة مدير';
+  $('mEmail').value = m ? m.email : '';
+  $('mName').value = m ? m.name : '';
+  $('mPin').value = m && m.pin ? m.pin : genPin();
+  $('mRole').value = m ? m.role : 'manager';
+  $('mStatus').value = m ? m.status : 'Active';
+  checks($('mDepts'), ADMIN.departments, m ? m.departments : []);
+  checks($('mBranches'), ADMIN.branches, m && m.branches.indexOf('*') === -1 ? m.branches : []);
+  toggleScope();
+  $('mgrDlg').showModal();
+  $('mEmail').focus();
+}
+
+$('mgrSave').addEventListener('click', function(){
+  var btn = this; btn.disabled = true;
+  var payload = { email: $('mEmail').value, name: $('mName').value, role: $('mRole').value,
+                  status: $('mStatus').value, departments: checked($('mDepts')), branches: checked($('mBranches')),
+                  pin: $('mPin').value };
+  google.script.run.withSuccessHandler(function(res){
+      btn.disabled = false;
+      if (res.auth){ $('mgrDlg').close(); return needLogin(res.message); }
+      if (!res.ok){ $('mgrErr').innerHTML = ''; $('mgrErr').appendChild(el('div','msg err', res.message)); return; }
+      $('mgrDlg').close();
+      loadAdmin(function(){ flash($('managers'), true, res.message); });
+    }).withFailureHandler(function(e){ btn.disabled = false; $('mgrErr').innerHTML=''; $('mgrErr').appendChild(el('div','msg err', e.message)); })
+    .adminSaveManager(TOKEN, payload, EDIT_MGR ? EDIT_MGR.email : '');
+});
+
+document.querySelectorAll('[data-close]').forEach(function(b){
+  b.addEventListener('click', function(){ $(b.dataset.close).close(); });
+});
+
+boot();
+</script>
+</body>
+</html>
